@@ -47,3 +47,26 @@ between '2011-12-31' and '2012-01-31'; -- 17
 select * from emp e where e.empname like '%y' or e.empname like '%i'; -- 18;
 
 
+select * from emp e where curdate()-e.joindate >=25; -- 19
+
+
+select * from emp e inner join desig d on e.desigcode = d.desigcode 
+where d.designame = 'Sales Man' and 
+timestampdiff(year, e.joindate, curdate()) between 20 and 30; -- 20 emptyset
+
+
+select e.empcode, e.empname, timestampdiff(year,e.birthdate, curdate()) as age 
+from emp e order by e.birthdate asc; -- 24
+
+select * from emp e inner join dept d on e.deptcode = d.deptcode 
+where deptname = 'Accounts'; -- 25
+
+select * from emp e where e.supcode = (select en.empcode from emp en where en.empname = 'Reddy'); -- 26
+
+-- 21 22 27
+
+select e.empcode, e.empname, s.salmonth, (s.basic+s.allow-s.deduct) 
+as takeHomePay from emp e join (select * from salary where (empcode, salmonth) in (select empcode, max(salmonth) 
+from salary group by empcode)) s on e.empcode = s.empcode; -- 23
+
+
