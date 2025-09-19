@@ -1,0 +1,518 @@
+
+----------------------------
+
+Trigger Syntax
+CREATE TRIGGER <trigger name> <trigger time > <trigger event>
+ON <table name>
+FOR EACH ROW
+<trigger body>;
+
+
+
+
+
+
+------------------------------------
+TRIGGER
+
+BEFORE INSERT 
+----------------------------------------
+
+CREATE TABLE test_trigger (percent INT, date DATETIME);
+delimiter $
+CREATE TRIGGER bi_t BEFORE INSERT ON test_trigger
+FOR EACH ROW BEGIN
+SET NEW.date = CURRENT_TIMESTAMP;
+IF NEW.percent < 0 THEN
+SET NEW.percent = 0;
+ELSEIF NEW.percent > 100 THEN
+SET NEW.percent = 100;
+END IF;
+END$
+delimiter ;
+
+SELECT * FROM test_trigger;
+
+
+INSERT INTO test_trigger (percent) VALUES(-2); 
+INSERT INTO test_trigger (percent) VALUES(30);
+INSERT INTO test_trigger (percent) VALUES(120);
+SELECT * FROM test_trigger;
+For attempts to insert a percentage value that lies outside the range from 0 to 100,
+the trigger converts the value to the nearest endpoint.
+
+The trigger automatically provides a value of CURRENT_TIMESTAMP for the
+DATETIME column. In effect, this works around the limitation that a column s default
+value must be a constant, and implements TIMESTAMP-like automatic initialization
+for a DATETIME column.
+
+
+mysql> INSERT INTO test_trigger (percent) VALUES(-2); DO SLEEP(2);
+mysql> INSERT INTO test_trigger (percent) VALUES(30); DO SLEEP(2);
+mysql> INSERT INTO test_trigger (percent) VALUES(120);
+
+
+----------------------------------------------------------------------------------------------------------
+
+
+Craete trigger to count no of employees
+
+delimiter $
+CREATE TRIGGER T2 after insert on emp 
+
+for each row
+begin
+declare tno int ;
+select count(*) into tno from emp ;
+end $
+delimiter ;
+
+
+IF NEW.age < 18 THEN
+--------------
+Delete trigger
+
+DROP TRIGGER <trigger name>;
+DROP TRIGGER IF EXISTS <trigger name>;
+
+-----------------
+CREATE A TRIGGER TO CHECK EMPLOYEE SHOULD BE OLDER THAN 18
+
+delimiter //
+CREATE TRIGGER emp_trigger BEFORE INSERT
+ON emp
+FOR EACH ROW
+if timestampdiff(year,NEW.birthdate,curdate()) <18 then 
+
+SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'employee must be older than 18.';
+END IF; //
+delimiter ;
+
+select empname,timestampdiff(year,birthdate,curdate()) as age ;
+
+select empname,timestampdiff(year,birthdate,curdate()) as age from emp where timestampdiff(year,birthdate,curdate()) <18;
+
+insert into emp(empcode,empname,deptcode,birthdate,joindate,sex,desigcode,supcode,gradecode,gradelevel,basicpay) 
+values ('7888', 'Ruma',  'ACCT', '2021-12-12', '2021-07-17', 'M', 'PRES',  null,  'GC1', 'GL1', 32000);
+
+
+SQLSTATE value can indicate errors, warnings, or  not found.  
+
+
+-----------------------------------------------------------------------
+Create an AFTER INSERT Trigger
+
+CREATE TABLE average_age (average double);
+INSERT INTO average_age SELECT AVG(timestampdiff(year,birthdate,curdate())) FROM emp;	
+
+Create an AFTER INSERT trigger on the person table to update the average_age table after insert
+
+delimiter //
+CREATE TRIGGER emp_ai AFTER INSERT
+ON emp
+FOR EACH ROW
+UPDATE average_age SET average = (SELECT AVG(timestampdiff(year,birthdate,curdate())) FROM emp); //
+delimiter ;
+
+select * from average_age;
+
+insert into emp(empcode,empname,deptcode,birthdate,joindate,sex,desigcode,supcode,gradecode,gradelevel,basicpay) 
+values ('72263', 'Mohan',  'ACCT', '2000-12-12', '2000-07-17', 'M', 'PRES',  null,  'GC1', 'GL1', 32000);
+
+
+
+------------------------------
+
+Create a BEFORE UPDATE Trigger
+
+Add a BEFORE UPDATE trigger to the person table with the same body as the BEFORE INSERT trigger:
+
+delimiter //
+CREATE TRIGGER emp_bu BEFORE UPDATE
+ON emp
+FOR EACH ROW
+if timestampdiff(year,NEW.birthdate,curdate()) <18 then 
+SIGNAL SQLSTATE '50002' SET MESSAGE_TEXT = 'Person must be older than 18.';
+END IF; //
+delimiter ;
+
+
+update emp set birthdate='2010-12-12' where empcode='7223';
+ERROR 1644 (50002): Person must be older than 18.
+
+-----------------------------------
+Create a BEFORE DELETE Trigger
+
+ Create a table called person with name and age for columns.
+
+CREATE TABLE person (name varchar(45), age int);
+
+Insert sample data into the table:
+
+INSERT INTO person VALUES ('Matthew', 25), ('Mark', 20);
+INSERT INTO person VALUES ('John', 14);
+
+Select the table to see the result:
+
+SELECT * FROM person;
+
+Create a table called person_archive with name, age, and time columns:
+
+CREATE TABLE person_archive (
+name varchar(45),
+age int,
+time timestamp DEFAULT NOW());
+
+delimiter //
+CREATE TRIGGER person_bd BEFORE DELETE
+ON person
+FOR EACH ROW
+INSERT INTO person_archive (name, age)
+VALUES (OLD.name, OLD.age); //
+delimiter ;
+
+
+
+DELETE FROM person WHERE name = 'John';
+
+
+----------------------------
+After delete trigger
+
+delimiter //
+CREATE TRIGGER emp_ad AFTER DELETE
+ON emp
+FOR EACH ROW
+UPDATE average_age SET average = (SELECT AVG(timestampdiff(year,birthdate,curdate())) FROM emp); //
+delimiter ;
+
+
+delete from emp where empcode='7123';
+
+-------------------------
+
+SHOW triggers;
+
+
+
+
+
+delimiter //
+
+CREATE PROCEDURE dorepeat(p1 INT)
+       BEGIN
+         SET @x = 0;
+         REPEAT
+           SET @x = @x + 1;
+         UNTIL @x > p1 END REPEAT;
+       END
+       //
+
+DELIMITER ;
+CALL dorepeat(1000)//
+
+
+mysql> SELECT @x//
+
+-------------
+
+dowhile 
+
+
+delimiter //
+CREATE PROCEDURE while_proc(x int)
+BEGIN
+DECLARE i INT DEFAULT 0;
+DECLARE y INT;
+SET y = x;
+    WHILE y > 0 DO
+        IF i=0 THEN
+            SET i = x+1;
+        ELSE
+            SET i = i+1;
+        END IF; 
+        SET y = y - 1;
+    END WHILE;
+    SELECT i;
+END //
+
+delimiter ;
+
+
+
+-------------------------------------
+Error handling
+
+The following example uses a handler for SQLSTATE '23000', which occurs for a duplicate-key error: 
+
+CREATE TABLE sample_table (s1 INT, PRIMARY KEY (s1));
+
+
+delimiter //
+
+CREATE PROCEDURE sample_handlerdemo ()
+       BEGIN
+         DECLARE CONTINUE HANDLER FOR SQLSTATE '23000' SET @x2 = 1;
+         SET @x = 1;
+         INSERT INTO sample_table VALUES (1);
+         SET @x = 2;
+         INSERT INTO sample_table VALUES (1);
+         SET @x = 3;
+       END;
+       //
+delimiter ;
+
+CALL sample_handlerdemo()//
+
+
+SELECT @x//
+    +------+
+    | @x   |
+    +------+
+    | 3    |
+    +------+
+    1 row in set (0.00 sec)
+	
+---------------------
+
+p	
+
+CREATE TABLE SupplierProducts (
+    supplierId INT,
+    productId INT,
+    PRIMARY KEY (supplierId , productId)
+);
+
+CREATE PROCEDURE InsertSupplierProduct(
+    IN inSupplierId INT, 
+    IN inProductId INT
+)
+BEGIN
+    -- exit if the duplicate key occurs
+    DECLARE EXIT HANDLER FOR 1062
+    BEGIN
+ 	SELECT CONCAT('Duplicate key (',inSupplierId,',',inProductId,') occurred') AS message;
+    END;
+    
+    -- insert a new row into the SupplierProducts
+    INSERT INTO SupplierProducts(supplierId,productId)
+    VALUES(inSupplierId,inProductId);
+    
+    -- return the products supplied by the supplier id
+    SELECT COUNT(*) 
+    FROM SupplierProducts
+    WHERE supplierId = inSupplierId;
+    
+END$$
+
+DELIMITER ;
+
+https://www.mysqltutorial.org/mysql-error-handling-in-stored-
+procedures/
+
+
+
+
+To declare a handler, you use the  DECLARE HANDLER statement as follows:
+
+DECLARE action HANDLER FOR condition_value statement;
+
+
+The action accepts one of the following values:
+
+CONTINUE :  the execution of the enclosing code block ( BEGIN   END ) continues.
+EXIT : the execution of the enclosing code block, where the handler is declared, terminates.
+The  condition_value specifies a particular condition or a class of conditions that activate the handler. The  condition_value accepts one of the following values:
+
+A MySQL error code.
+A standard SQLSTATE value. Or it can be an SQLWARNING , NOTFOUND or SQLEXCEPTION condition, which is shorthand for the class of SQLSTATE values. The NOTFOUND condition is used for a cursor or  SELECT INTO variable_list statement.
+A named condition associated with either a MySQL error code or SQLSTATE value.
+The statement could be a simple statement or a compound statement enclosing by the BEGIN and END keywords
+
+
+
+-------------------------------------
+DCL Commands
+
+CREATE USER vatsa@'localhost' IDENTIFIED BY 'mypass';  
+GRANT ALL ON MY_TABLE TO vatsa@'localhost';  
+GRANT SELECT ON Users TO vatsa@'localhost'; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DECLARE action HANDLER FOR condition_value statement;
+
+
+
+
+
+
+
+
+
+
+
+
+delimiter //
+
+CREATE PROCEDURE InsertSupplierProduct(
+    IN inSupplierId INT, 
+    IN inProductId INT
+)
+BEGIN
+    
+    DECLARE EXIT HANDLER FOR 1062
+    BEGIN
+ 	SELECT CONCAT('Duplicate key (',inSupplierId,',',inProductId,') occurred') AS message;
+    END;
+    
+    
+    INSERT INTO SupplierProducts(supplierId,productId)
+    VALUES(inSupplierId,inProductId);
+    
+    SELECT COUNT(*) 
+    FROM SupplierProducts
+    WHERE supplierId = inSupplierId;
+    
+END//
+
+
+--------------------------------------------
+
+
+DELIMITER $$
+
+CREATE PROCEDURE InsertSupplierProduct(
+    IN inSupplierId INT, 
+    IN inProductId INT
+)
+BEGIN
+    
+    DECLARE CONTINUE HANDLER FOR 1062
+    BEGIN
+	SELECT CONCAT('Duplicate key (',inSupplierId,',',inProductId,') occurred') AS message;
+    END;
+    
+    
+    INSERT INTO SupplierProducts(supplierId,productId)
+    VALUES(inSupplierId,inProductId);
+    
+    
+    SELECT COUNT(*) 
+    FROM SupplierProducts
+    WHERE supplierId = inSupplierId;
+    
+END$$
+
+DELIMITER ;
+DELIMITER ;
+
+
+----------------------------
+
+
+DROP PROCEDURE IF EXISTS InsertSupplierProduct;
+
+DELIMITER $$
+
+CREATE PROCEDURE InsertSupplierProduct(
+    IN inSupplierId INT, 
+    IN inProductId INT
+)
+BEGIN
+    
+    DECLARE EXIT HANDLER FOR 1062 SELECT 'Duplicate keys error encountered' Message; 
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'SQLException encountered' Message; 
+    DECLARE EXIT HANDLER FOR SQLSTATE '23000' SELECT 'SQLSTATE 23000' ErrorCode;
+    
+    
+    INSERT INTO SupplierProducts(supplierId,productId)
+    VALUES(inSupplierId,inProductId);
+    
+    
+    SELECT COUNT(*) 
+    FROM SupplierProducts
+    WHERE supplierId = inSupplierId;
+    
+END$$
+
+
+
+
+DROP PROCEDURE IF EXISTS InsertSupplierProduct;
+
+DELIMITER $$
+
+CREATE PROCEDURE InsertSupplierProduct(
+    IN inSupplierId INT, 
+    IN inProductId INT
+)
+BEGIN
+    
+    DECLARE EXIT HANDLER FOR 1062 SELECT 'Duplicate keys error encountered' Message; 
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'SQLException encountered' Message; 
+    DECLARE EXIT HANDLER FOR SQLSTATE '23000' SELECT 'SQLSTATE 23000' ErrorCode;
+    
+    
+    INSERT INTO SupplierProducts(supplierId,productId)
+    VALUES(inSupplierId,inProductId);
+    
+    
+    SELECT COUNT(*) 
+    FROM SupplierProducts
+    WHERE supplierId = inSupplierId;
+    
+END$$
+
+DELIMITER ;
+
+
+-------------------------
+
+
+DELIMITER $$
+
+CREATE PROCEDURE TestProc()
+BEGIN
+
+    DECLARE EXIT HANDLER FOR 1146 
+    SELECT 'Please create table abc first' Message; 
+        
+    SELECT * FROM abc;
+END$$
+
+DELIMITER ;
+-----------------------------------------------------
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE TestProc()
+BEGIN
+    DECLARE TableNotFound CONDITION for 1146 ; 
+
+    DECLARE EXIT HANDLER FOR TableNotFound 
+	SELECT 'Please create table abc first' Message; 
+    SELECT * FROM abc;
+END$$
+
+DELIMITER ;
+
+
+ .

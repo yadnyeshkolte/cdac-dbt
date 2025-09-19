@@ -1,0 +1,182 @@
+create view empage(empcode,age) 
+as 
+(select empcode, timestampdiff(year,birthdate,curdate()) as age 
+from emp);
+
+create view empcount(empcount) 
+as (select count(*) as empcount from emp);
+
+create view deptcount(deptcount) 
+as (select count(*) as deptcount from dept);
+
+select deptcode,(deptempcount/empcount)*100 
+from deptempcount,empcount 
+order by deptcode;
+
+alter view 
+emppay(empcode,netpay,salmonth) 
+as (
+select empcode, (basic+allow-deduct)+1000,
+salmonth from salary);
+
+drop view deptcount
+
+create table contacts
+( contact_id INT(11) NOT NULL AUTO_INCREMENT,
+ last_name VARCHAR(30) NOT NULL, 
+first_name VARCHAR(25), 
+birthday DATE, 
+CONSTRAINT contacts_pk PRIMARY KEY (contact_id) ); 
+
+select * from contacts;
+
+INSERT into 
+contacts (last_name,first_name,birthday) 
+value ('kumar1','kiran1','1986-07-07');
+
+
+CREATE TABLE 
+test1(test_id INT NOT NULL PRIMARY KEY) 
+ENGINE=InnoDB;
+START TRANSACTION;
+INSERT INTO test1 VALUES(1);
+INSERT INTO test1 VALUES(2);
+INSERT INTO test1 VALUES(3);
+INSERT INTO test1 VALUES(4);
+SELECT * FROM test1;
+SAVEPOINT insertion;
+delete from test1 where test_id=2;
+delete from test1 where test_id=3;
+savepoint deletion;
+SELECT * FROM test1;
+ROLLBACK TO insertion;
+SELECT * FROM test1;
+INSERT INTO test1 VALUES(5);
+rollback to deletion;
+SELECT * FROM test1;
+ rollback;
+ 
+ CREATE TABLE `student_info` (  
+  `studentid` int NOT NULL AUTO_INCREMENT,  
+  `name` varchar(45) DEFAULT NULL,  
+  `age` varchar(3) DEFAULT NULL,  
+  `mobile` varchar(20) DEFAULT NULL,  
+  `email` varchar(25) DEFAULT NULL,  
+  PRIMARY KEY (`studentid`),  
+  UNIQUE KEY `email_UNIQUE` (`email`)  
+) 
+
+
+CREATE TABLE employees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    department VARCHAR(50),
+    salary DECIMAL(10,2)
+);
+
+
+INSERT INTO employees (name, department, salary) VALUES
+('Alice', 'HR', 50000),
+('Bob', 'IT', 70000),
+('Charlie', 'Finance', 65000),
+('David', 'IT', 72000),
+('Emma', 'HR', 52000);
+
+SELECT * FROM employees WHERE department = 'IT';
+
+CREATE INDEX idx_department ON employees(department);
+
+SHOW INDEX FROM employees;
+
+SELECT * FROM employees WHERE department = 'IT';
+
+delimiter //
+CREATE TRIGGER emp_trigger BEFORE INSERT
+ON emp
+FOR EACH ROW
+if timestampdiff(year,NEW.birthdate,curdate()) <18 then 
+SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'employee must be older than 18.';
+END IF; //
+delimiter ;
+
+
+
+insert into emp(empcode,empname,deptcode,birthdate,joindate,sex,desigcode,supcode,gradecode,gradelevel,basicpay) 
+values ('7888', 'Ruma',  'ACCT', '2021-12-12', '2021-07-17', 'M', 'PRES',  null,  'GC1', 'GL1', 32000);
+
+select * from emp;
+
+insert into 
+emp(empcode,empname,deptcode,birthdate,joindate,sex,desigcode,supcode,gradecode,gradelevel,basicpay) 
+values ('788002', 'Ruma',  'ACCT', '2025-12-12', '2025-07-17', 'M', 'PRES',  null,  'GC1', 'GL1', 32000);
+
+
+
+CREATE TABLE average_age (average double);
+
+INSERT INTO average_age SELECT AVG(timestampdiff(year,birthdate,curdate())) FROM emp;	
+
+delimiter //
+CREATE TRIGGER emp_ai AFTER INSERT
+ON emp
+FOR EACH ROW
+UPDATE average_age SET average = 
+(SELECT AVG(timestampdiff(year,birthdate,curdate())) 
+FROM emp); //
+delimiter ;
+
+select * from average_age;
+
+delimiter //
+CREATE TRIGGER emp_bu BEFORE UPDATE
+ON emp
+FOR EACH ROW
+if timestampdiff(year,NEW.birthdate,curdate()) <18 then 
+SIGNAL SQLSTATE '50002' SET MESSAGE_TEXT = 'Person must be older than 18.';
+END IF; //
+delimiter ;
+
+update emp set birthdate='2010-12-12' 
+where empcode='6569';
+
+
+insert into emp(empcode,empname,deptcode,birthdate,joindate,sex,desigcode,supcode,gradecode,gradelevel) 
+values ('72269', 'Mohan',  'ACCT', '2000-12-12', '2000-07-17', 'M', 'PRES',  null,  'GC1', 'GL1');
+
+CREATE TABLE person (name varchar(45), age int);
+
+INSERT INTO person VALUES ('Matthew', 25), ('Mark', 20);
+INSERT INTO person VALUES ('John', 14);
+
+select * from person_archive
+
+CREATE TABLE person_archive (
+name varchar(45),
+age int,
+time timestamp DEFAULT NOW());
+
+delimiter //
+CREATE TRIGGER person_bd BEFORE DELETE
+ON person
+FOR EACH ROW
+INSERT INTO person_archive (name, age)
+VALUES (OLD.name, OLD.age); //
+delimiter ;
+
+DELETE FROM person WHERE name = 'John';
+
+select * from person_archive
+
+select * from person
+
+delimiter //
+CREATE TRIGGER emp_ad1 AFTER DELETE
+ON emp
+FOR EACH ROW
+UPDATE average_age SET average = (SELECT AVG(timestampdiff(year,birthdate,curdate())) FROM emp); //
+delimiter ;
+
+select * from emp
+select * from average_age;
+
+delete from emp where empcode='6569';
