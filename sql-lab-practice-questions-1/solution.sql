@@ -70,3 +70,38 @@ as takeHomePay from emp e join (select * from salary where (empcode, salmonth) i
 from salary group by empcode)) s on e.empcode = s.empcode; -- 23
 
 
+
+
+-- check
+select s.empcode as supervisorCode,
+s.empname as supervisorName,
+(select count(*) as countN from emp en where en.supcode = s.empcode group by s.empcode having countN>=1) as countName
+from emp s
+where s.empcode in (select supcode from emp where supcode is not null)
+order by countName asc; -- 27
+
+
+
+
+
+select e.empname as EmployeeName, s.empname as SupervisorName 
+from emp e inner join emp s where s.empcode = e.supcode; -- 30
+
+
+
+select e.empcode, e.empname from emp e where e.empcode not in (select h.empcode from history h); -- 32
+
+
+select e.empcode, e.empname, count(h.changedate) as noOfPromotions
+from emp e join history h
+on e.empcode = h.empcode 
+group by h.empcode
+having noOfPromotions >= all (select count(*) from history group by empcode); -- 33
+
+
+select e.empcode, e.empname, h.changedate
+from emp e join history h
+on e.empcode = h.empcode 
+where h.changedate between '1991-01-01' and '1991-12-31';
+-- where h.changedate like '1991%'; -- 34
+
