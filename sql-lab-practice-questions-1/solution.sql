@@ -46,14 +46,11 @@ between '2011-12-31' and '2012-01-31'; -- 17
 
 select * from emp e where e.empname like '%y' or e.empname like '%i'; -- 18;
 
-
 select * from emp e where curdate()-e.joindate >=25; -- 19
-
 
 select * from emp e inner join desig d on e.desigcode = d.desigcode 
 where d.designame = 'Sales Man' and 
 timestampdiff(year, e.joindate, curdate()) between 20 and 30; -- 20 emptyset
-
 
 select e.empcode, e.empname, timestampdiff(year,e.birthdate, curdate()) as age 
 from emp e order by e.birthdate asc; -- 24
@@ -69,9 +66,6 @@ select e.empcode, e.empname, s.salmonth, (s.basic+s.allow-s.deduct)
 as takeHomePay from emp e join (select * from salary where (empcode, salmonth) in (select empcode, max(salmonth) 
 from salary group by empcode)) s on e.empcode = s.empcode; -- 23
 
-
-
-
 -- check
 select s.empcode as supervisorCode,
 s.empname as supervisorName,
@@ -79,25 +73,27 @@ s.empname as supervisorName,
 from emp s
 where s.empcode in (select supcode from emp where supcode is not null)
 order by countName asc; -- 27
-
-
-
-
+-- Given by Claude
+SELECT 
+    s.empcode AS supervisor_code,
+    s.empname AS supervisor_name,
+    COUNT(e.empcode) AS number_of_subordinates
+FROM emp s
+INNER JOIN emp e ON s.empcode = e.supcode
+GROUP BY s.empcode, s.empname
+Having number_of_subordinates > 1
+ORDER BY number_of_subordinates DESC;  -- 27
 
 select e.empname as EmployeeName, s.empname as SupervisorName 
 from emp e inner join emp s where s.empcode = e.supcode; -- 30
 
-
-
 select e.empcode, e.empname from emp e where e.empcode not in (select h.empcode from history h); -- 32
-
 
 select e.empcode, e.empname, count(h.changedate) as noOfPromotions
 from emp e join history h
 on e.empcode = h.empcode 
 group by h.empcode
 having noOfPromotions >= all (select count(*) from history group by empcode); -- 33
-
 
 select e.empcode, e.empname, h.changedate
 from emp e join history h
@@ -122,8 +118,6 @@ group by d.deptcode, d.deptname, d.budget; -- 35
 select upper(e.empname) from emp e; -- 36
 -- select lower(e.empname) from emp e;
 
-
-
 select * from emp e  -- 37
  where e.basicpay > (select en.basicpay from emp en where en.empname='Jain');
 
@@ -143,7 +137,6 @@ select e.empcode, e.empname, max(s.basic+s.allow-s.deduct) as TotalPay
 from emp e inner join salary s on e.empcode = s.empcode
 where (s.basic+s.allow-s.deduct) != ((s.basic+s.allow-s.deduct) <= all(select (s2.basic+s2.allow-s2.deduct) from salary s2))
 group by e.empcode, s.empcode;  -- 41
-
 
 select e.empcode, e.empname, d.deptcode, d.deptname, max(s.basic+s.allow-s.deduct) as TotalPay
 from dept d 
