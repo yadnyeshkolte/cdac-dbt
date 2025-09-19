@@ -105,3 +105,46 @@ on e.empcode = h.empcode
 where h.changedate between '1991-01-01' and '1991-12-31';
 -- where h.changedate like '1991%'; -- 34
 
+select d.deptcode, d.deptname, d.budget, sum(e.basicpay)
+from dept d
+left outer join emp e
+on e.deptcode = d.deptcode
+group by d.deptcode; -- 35
+
+select d.deptcode, d.deptname, d.budget, sum(s.basic + s.allow - s.deduct) as TotalPay
+from dept d
+left outer join emp e
+on e.deptcode = d.deptcode
+left outer join salary s 
+on s.empcode = e.empcode
+group by d.deptcode, d.deptname, d.budget; -- 35
+
+select upper(e.empname) from emp e; -- 36
+-- select lower(e.empname) from emp e;
+
+
+
+select * from emp e  -- 37
+ where e.basicpay > (select en.basicpay from emp en where en.empname='Jain');
+
+select * from emp e  -- 38
+where e.basicpay between 11000 and 12000; 
+
+select * from emp e  -- 39
+where e.basicpay > (select avg(en.basicpay) from emp en)
+order by e.basicpay;
+
+select e.empcode, e.empname, max(s.basic+s.allow-s.deduct) as TotalPay
+from emp e inner join salary s on e.empcode = s.empcode
+where (s.basic+s.allow-s.deduct) >= all(select (s2.basic+s2.allow-s2.deduct) from salary s2)
+group by e.empcode, s.empcode;  -- 40
+
+select e.empcode, e.empname, max(s.basic+s.allow-s.deduct) as TotalPay
+from emp e inner join salary s on e.empcode = s.empcode
+where (s.basic+s.allow-s.deduct) != ((s.basic+s.allow-s.deduct) <= all(select (s2.basic+s2.allow-s2.deduct) from salary s2))
+group by e.empcode, s.empcode;  -- 41
+
+
+
+
+
