@@ -145,6 +145,11 @@ where (s.basic+s.allow-s.deduct) != ((s.basic+s.allow-s.deduct) <= all(select (s
 group by e.empcode, s.empcode;  -- 41
 
 
-
+select e.empcode, e.empname, d.deptcode, d.deptname, max(s.basic+s.allow-s.deduct) as TotalPay
+from dept d 
+left outer join emp e on e.deptcode = d.deptcode
+inner join salary s on e.empcode = s.empcode
+where (s.basic+s.allow-s.deduct) >= all(select (s1.basic+s1.allow-s1.deduct) from salary s1)
+group by d.deptcode, s.empcode; -- 42
 
 
