@@ -200,7 +200,51 @@ where indexedPay = 5;
 
 drop view maxSalaries; -- 44
 
+-- 45
+create view femaleEmployee as (
+select e.empcode, e.empname, e.sex, e.deptcode, 
+max(s.basic+s.allow-s.deduct) as totalPay
+from emp e inner join salary s on e.empcode = s.empcode
+group by e.empcode
+having e.sex = 'F'
+);
+-- select * from femaleEmployee
+select f.empcode, f.empname, f.sex, d.deptcode, d.deptname, totalPay
+from femaleEmployee f inner join dept d on f.deptcode = d.deptcode
+where f.totalPay >= all(select fe.totalPay from femaleEmployee fe);
 
+drop view femaleEmployee; -- 45
+
+-- 46
+create view femaleEmployee as (
+select e.empcode, e.empname, e.sex, e.deptcode, 
+max(s.basic+s.allow-s.deduct) as totalPay
+from emp e inner join salary s on e.empcode = s.empcode
+group by e.empcode
+having e.sex = 'F'
+);
+-- select * from femaleEmployee;
+create view maleEmployee as (
+select e.empcode, e.empname, e.sex, e.deptcode, 
+max(s.basic+s.allow-s.deduct) as totalPay
+from emp e inner join salary s on e.empcode = s.empcode
+group by e.empcode
+having e.sex = 'M'
+);
+-- select * from maleEmployee;
+create view minfemaleEmployee as (
+select f.empcode, f.empname, f.sex, d.deptcode, d.deptname, totalPay
+from femaleEmployee f inner join dept d on f.deptcode = d.deptcode
+where f.totalPay <= all(select fe.totalPay from femaleEmployee fe)
+);
+-- select * from minfemaleEmployee;
+select m.empcode, m.empname, m.sex, m.deptcode, m.totalPay
+from maleEmployee m
+where m.totalPay > (select mf.totalPay from minfemaleEmployee mf); 
+
+drop view minfemaleEmployee;
+drop view femaleEmployee;
+drop view maleEmployee; -- 46
 
 
 
