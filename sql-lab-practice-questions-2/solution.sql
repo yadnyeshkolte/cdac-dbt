@@ -138,7 +138,7 @@ create view maxOne as(
 select e.empcode, e.empname, max(s.basic+s.allow-s.deduct) as TotalPay
 from emp e inner join salary s on e.empcode = s.empcode
 where (s.basic+s.allow-s.deduct) >= all(select (s2.basic+s2.allow-s2.deduct) from salary s2)
-group by e.empcode, s.empcode)
+group by e.empcode, s.empcode);
 
 select e.empcode, e.empname, max(s.basic+s.allow-s.deduct) as TotalPay
 from emp e inner join salary s on e.empcode = s.empcode
@@ -163,6 +163,25 @@ and a.totalSalary = d.employeeSalary;
 
 drop view empActualSalary;
 drop view deptMax; --42
+
+-- 43
+create view maxSalaries as (
+select e.empcode, e.empname, e.deptcode, max(s.basic+s.allow-s.deduct) as totalPay
+from emp e inner join salary s on e.empcode = s.empcode
+group by s.empcode
+);
+
+with nd2High as (
+	select empcode, empname, deptcode, totalPay,
+    row_number() over(order by totalpay desc) as indexedTotalPay
+    from maxSalaries
+)
+select a.empcode, a.empname, a.deptcode, a.totalPay 
+from nd2High a
+where indexedTotalPay = 2; 
+
+drop view maxSalaries; -- 43
+
 
 
 
