@@ -133,10 +133,18 @@ from emp e inner join salary s on e.empcode = s.empcode
 where (s.basic+s.allow-s.deduct) >= all(select (s2.basic+s2.allow-s2.deduct) from salary s2)
 group by e.empcode, s.empcode;  -- 40
 
+-- 41
+create view maxOne as(
 select e.empcode, e.empname, max(s.basic+s.allow-s.deduct) as TotalPay
 from emp e inner join salary s on e.empcode = s.empcode
-where (s.basic+s.allow-s.deduct) != ((s.basic+s.allow-s.deduct) <= all(select (s2.basic+s2.allow-s2.deduct) from salary s2))
-group by e.empcode, s.empcode;  -- 41
+where (s.basic+s.allow-s.deduct) >= all(select (s2.basic+s2.allow-s2.deduct) from salary s2)
+group by e.empcode, s.empcode)
+
+select e.empcode, e.empname, max(s.basic+s.allow-s.deduct) as TotalPay
+from emp e inner join salary s on e.empcode = s.empcode
+inner join maxOne m
+where e.empcode != m.empcode
+group by s.empcode; -- 41
 
 -- 42 
 create view empActualSalary(empcode, empname, totalSalary, deptcode) as
