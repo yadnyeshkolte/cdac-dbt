@@ -246,5 +246,31 @@ drop view minfemaleEmployee;
 drop view femaleEmployee;
 drop view maleEmployee; -- 46
 
+-- 47
+create view totalSalary as(
+select e.empcode, e.empname, max(s.basic+s.allow-s.deduct) as totalPay
+from emp e inner join salary s on e.empcode = s.empcode
+group by s.empcode
+);
+-- select * from totalSalary;
+-- select avg(totalPay) from totalSalary; -- '14495.7500'
+select t.empcode, t.empname, t.totalPay
+from totalSalary t
+where t.totalPay >= (select avg(totalPay) from totalSalary);
 
+drop view totalSalary; -- 47
 
+-- 48
+create view totalSalary as(
+select e.empcode, e.empname, e.deptcode, max(s.basic+s.allow-s.deduct) as totalPay
+from emp e inner join salary s on e.empcode = s.empcode
+group by s.empcode
+);
+-- select * from totalSalary;
+-- select avg(totalPay) from totalSalary; -- '14495.7500'
+select t.empcode, t.empname, t.deptcode, t.totalPay
+from totalSalary t inner join dept d on t.deptcode = d.deptcode
+where t.totalPay <= (select avg(totalPay) 
+from totalSalary) and d.deptname='Accounts';
+
+drop view totalSalary; -- 48
