@@ -182,6 +182,24 @@ where indexedTotalPay = 2;
 
 drop view maxSalaries; -- 43
 
+-- 44
+create view maxSalaries as (
+select e.empcode, e.empname, e.deptcode, max(s.basic+s.allow-s.deduct) as totalPay
+from emp e inner join salary s on e.empcode = s.empcode
+group by s.empcode
+);
+
+with th5High as(
+	select empcode, empname, deptcode, totalPay,
+    row_number() over(order by totalPay desc) as indexedPay
+    from maxSalaries
+)
+select m.empcode, m.empname, m.deptcode, m.totalPay
+from th5High m
+where indexedPay = 5;
+
+drop view maxSalaries; -- 44
+
 
 
 
