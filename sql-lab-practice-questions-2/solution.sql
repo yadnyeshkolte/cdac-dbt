@@ -138,11 +138,24 @@ from emp e inner join salary s on e.empcode = s.empcode
 where (s.basic+s.allow-s.deduct) != ((s.basic+s.allow-s.deduct) <= all(select (s2.basic+s2.allow-s2.deduct) from salary s2))
 group by e.empcode, s.empcode;  -- 41
 
-select e.empcode, e.empname, d.deptcode, d.deptname, max(s.basic+s.allow-s.deduct) as TotalPay
-from dept d 
-left outer join emp e on e.deptcode = d.deptcode
+-- 42 
+create view empActualSalary(empcode, empname, totalSalary, deptcode) as
+(select e.empcode, e.empname, max(s.basic+s.allow-s.deduct), e.deptcode from emp e
 inner join salary s on e.empcode = s.empcode
-where (s.basic+s.allow-s.deduct) >= all(select (s1.basic+s1.allow-s1.deduct) from salary s1)
-group by d.deptcode, s.empcode; -- 42
+group by s.empcode);
+
+create view deptMax(deptcode, deptname, employeeSalary) as 
+(select d.deptcode, d.deptname, max(a.totalsalary) as employeeSalary
+from dept d inner join empActualSalary a on d.deptcode = a.deptcode
+group by d.deptcode); 
+
+select a.empcode, a.empname, a.totalSalary, d.deptcode, d.deptname from 
+empActualSalary a, deptMax d where a.deptcode = d.deptcode 
+and a.totalSalary = d.employeeSalary;
+
+drop view empActualSalary;
+drop view deptMax; --42
+
+
 
 
