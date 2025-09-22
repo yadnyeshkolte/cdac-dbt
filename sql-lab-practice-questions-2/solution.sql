@@ -55,8 +55,12 @@ timestampdiff(year, e.joindate, curdate()) between 20 and 30; -- 20 emptyset
 select e.empcode, e.empname, timestampdiff(year,e.birthdate, curdate()) as age 
 from emp e order by e.birthdate asc; -- 24
 
-select * from emp e inner join dept d on e.deptcode = d.deptcode 
-where deptname = 'Accounts'; -- 25
+create view orderByAge as (
+select e.empcode, e.empname, timestampdiff(year, e.birthdate, curdate()) as age, d.deptcode, d.deptname
+from emp e inner join dept d on e.deptcode = d.deptcode
+where d.deptname = 'Accounts' order by age asc
+);
+select * from orderByAge o order by o.empname; -- 25
 
 select * from emp e where e.supcode = (select en.empcode from emp en where en.empname = 'Reddy'); -- 26
 
