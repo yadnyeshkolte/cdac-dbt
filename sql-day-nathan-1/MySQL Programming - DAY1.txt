@@ -1,0 +1,134 @@
+		MySQL Programming - DAY1
+
+Data base module
+
+sql
+create
+   constrains
+insert 
+update
+delete
+
+select
+ where
+ group by
+ having
+ order by
+
+
+subquery
+
+join
+
+
+
+mongdb
+
+MySQL programming
+
+  stored procedure
+
+   set of sql statement +
+
+   programing construct(data types,variable,operaotr,if,else )
+
+
+  stored function
+  stored trigger
+
+class student
+{
+
+
+public static String findresult(int mark)
+{
+
+finding result
+return result
+
+}
+
+main()
+{
+
+
+String res=  findresult(40)
+
+
+}
+
+
+}
+
+---------------------------------------------------------
+Stored procedure
+   in, out,inout
+delimiter //
+drop procedure sayHello//
+
+create procedure sayHello()
+begin
+select * from emp;
+select * from dept;
+end//
+
+
+drop procedure sayHello//
+create procedure sayHello(in name varchar(20))
+begin
+
+select concat("Hello  ", name) as Greeting;
+
+end//
+call sayHello("ravi shankar")//
+-------------------------------------------------------------
+
+drop procedure getempdetails//
+create procedure getempdetails(in eid int)
+begin
+
+select empno,ename,sal from emp
+where empno = eid;
+
+end//
+call getempdetails(7369)//
+
+----------------------------------------------------
+
+drop procedure getempdetails//
+create procedure getempdetails(in dno int)
+begin
+
+select empno,ename,sal,deptno from emp
+where deptno = dno;
+
+end//
+call getempdetails(30)//
+
+
+drop procedure getempdetails//
+create procedure getempdetails(in dno int)
+begin
+
+select max(sal),deptno from emp
+where deptno = dno
+group by deptno;
+end//
+call getempdetails(30)//
+
+
+
+in
+out
+inout
+
+select into
+cursor
+
+
+
+
+
+
+
+

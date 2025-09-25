@@ -1,0 +1,175 @@
+		SQL programming - Day2
+stored procedure
+
+in 
+out
+inout
+select into
+cursor
+---------------------------------------------------
+roduct_id | product_name | price    | stock |
++------------+--------------+----------+-------+
+|          1 | Laptop       | 55000.00 |    10 |
+|          2 | Mouse        |   500.00 |   200 |
+|          3 | Keyboard     |  1200.00 |   150 |
+|          4 | Monitor      |  8000.00 |    50 |
+|          5 | Printer      |  6500.00 |    30 
+
+
+ Fetch product price when product name is passed.
+---------------------------------------------------------------------------------------
+using in,select into
+delimiter //
+drop procedure getproductprice//
+create procedure getproductprice(in p_name varchar(10))
+begin
+declare p_product_name varchar(20);
+declare p_price float;
+select product_name,price into  p_product_name,p_price from products
+where product_name = p_name;
+
+select concat("price of " , p_product_name, "is ",p_price);
+end//
+
+call getproductprice("Laptop")//
+
+
+
+----------------------------------------------------------------------------------------
+using out ,select into
+
+delimiter //
+drop procedure getproductprice//
+create procedure getproductprice(in p_name varchar(10),out p_product_name varchar(10),out p_price float)
+begin
+
+select product_name,price into  p_product_name, p_price from products
+where product_name = p_name;
+
+end//
+
+call getproductprice("Laptop",@product_name,@p_price)//
+
+-----------------------------------------------------------------------------------------
+
+using inout
+
+passing product id,geting price
+
+
+
+
+delimiter //
+drop procedure getproductprice//
+
+create procedure getproductprice(inout p_value float)
+begin
+
+select price into  p_value from products
+where product_id = p_value;
+
+end//
+
+set @pvalue = 1;
+
+call getproductprice(@pvalue)//
+
+select @pvalue//
+
+
+
+---------------------------------------------------------------------------------------------------cursor
+
+resultSet rs = pmt.executequery()
+
+while(rs.next)
+{
+
+  syso(rs.getint(1)+rs.getString(2))
+
+}
+
+--------------------------------------------------------------
+declare cursor
+
+open cursor
+
+fetch cursor
+
+close the cursor
+
+
+declare cursor c1 is select product_id,Product_name,Product_price from product;
+
+drop procedure ListProducts//
+create procedure ListProducts()
+begin
+declare pid int;
+declare pname varchar(20);
+declare p_price float;
+declare disprice float;
+declare done int default 0;
+
+declare c1 cursor for select product_id,product_name,price from products;
+
+declare continue handler for not found set done = 1;
+
+open c1;
+
+read_product: loop
+
+fetch c1 into pid,pname,p_price;
+
+
+if done = 1 then
+  leave read_product;
+end if;
+
+if(p_price >10000) then
+set disprice = p_price*0.02;
+else
+set disprice = p_price*0.01;
+end if;
+select pid,pname,p_price, disprice;
+
+end loop;
+
+close c1;
+end//
+
+call ListProducts()//
+
+-----------------------------------------------------
+
+create function getprice(pid int)
+returns float
+deterministic
+begin
+declare p_price float;
+
+select price into p_price from products where product_id = pid;
+
+return p_price;
+
+end//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
