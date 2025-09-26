@@ -1,7 +1,5 @@
-
-
-
-
+-- First group of 5 quesion remaining
+--- 
 -- 1
  delimiter //
  create procedure getHigestMarks(out highM int)
