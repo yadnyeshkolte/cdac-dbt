@@ -124,5 +124,23 @@ INSERT INTO products (product_id, product_name, price, stock) VALUES
 (5, 'Printer', 6500.00, 30);
 
 
+-- 1
+create view empSalary as (
+select e.empcode, e.empname, (s.basic+s.allow-s.deduct) as latestSalary 
+from emp e inner join salary s on e.empcode = s.empcode
+where s.salmonth >= all(select salmonth from salary)
+);
+-- select * from empsalary;
+delimiter //
+create procedure findEmp(in empid int)
+begin
+select e.empcode, e.empname, e.latestSalary 
+from empSalary e where e.empcode = empid;
+end //
 
+set @id = 7192;
+call findEmp(@id);
 
+drop view empSalary;
+//delimiter 
+drop procedure findEmp;
