@@ -25,13 +25,20 @@
 ---
 ```sql
 select *, timestampdiff(year, e.birthdate, curdate()) as age from emp e 
-where timestampdiff(year, e.birthdate, curdate()) between 55 and 60; -- 7
+where timestampdiff(year, e.birthdate, curdate()) between 55 and 60 -- 7
+order by age asc;
 ```
 - `timestampdiff(year, e.birthdate, curdate())` -  to get the date difference
 - `year` - We want value in years
 - `curdate()` - It will give reference to the current date
 - `as age` -  Giving aliasing to the *timestampdiff(year, e.birthdate, curdate())* table
 - `between` `and` - It will give values only between value1 and value2
-- **We can't call aliasing coloumn (like age) in the `where` clause**
+- **We can't call aliasing coloumn (like age) in the `where` clause**, but can write in order by
+- `order by` *value* `asc` - order the table according to ascending order `asc` - ascending or `desc` - descending
 ---
-
+```sql
+where d.deptname in ('Accounts','Personal','IT');
+where d.deptname = 'Accounts' or 'Personal' or 'IT'; -- not possible
+```
+- `in` is used to check two or more attributes to check in single coloumn
+- `or` its is used to check two coloumms not attributes or to check conditions
