@@ -33,12 +33,12 @@ order by age asc;
 - `curdate()` - It will give reference to the current date
 - `as age` -  Giving aliasing to the *timestampdiff(year, e.birthdate, curdate())* table
 - `between` `and` - It will give values only between value1 and value2
-- **We can't call aliasing coloumn (like age) in the `where` clause**, but can write in order by
+- **We can't call aliasing column (like age) in the `where` clause**, but can write in order by
 - `order by` *value* `asc` - order the table according to ascending order `asc` - ascending or `desc` - descending
 ---
 ```sql
 where d.deptname in ('Accounts','Personal','IT');
 where d.deptname = 'Accounts' or 'Personal' or 'IT'; -- not possible
 ```
-- `in` is used to check two or more attributes to check in single coloumn
-- `or` its is used to check two coloumms not attributes or to check conditions
+- `in` is used to check two or more attributes to check in single column
+- `or` its is used to check two columns not attributes or to check conditions
