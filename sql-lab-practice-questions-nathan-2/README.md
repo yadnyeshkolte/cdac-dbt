@@ -1,5 +1,14 @@
 # MySQL Assignment 2
 
+
+``` md
+Always be cautious when using SELECT ... INTO — it must return exactly one row, or you'll get either:
+- Error 1172 (more than one row), or
+- Error 1329 (no data found).
+
+Dataype must always to be same in both in and out
+```
+
 ## Create Database and Table
 
 ```sql
@@ -55,3 +64,4 @@ INSERT INTO students (name, age, course, marks) VALUES
 4. **Write a procedure that retrieves the overall average marks of all students into an OUT parameter using SELECT INTO and display the retrieved average marks.**
 
 5. **Write a procedure that accepts a student ID as input and retrieves the course name of that student into an OUT parameter using SELECT INTO and display the retrieved course name.**
+
