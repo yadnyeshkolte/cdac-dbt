@@ -88,7 +88,7 @@ call printTable(@number1, @number2);
 
 delimiter //
 drop procedure printTable;
-
+/*
 +-------------+-------------+
 | Number1     | Number2     |
 +-------------+-------------+
@@ -103,3 +103,27 @@ drop procedure printTable;
 | 5 x 9 = 45  | 7 x 9 = 63  |
 | 5 x 10 = 50 | 7 x 10 = 70 |
 +-------------+-------------+
+*/
+
+
+-- Next five Questions
+
+CREATE TABLE products (
+    product_id INT PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    stock INT NOT NULL
+);
+
+-- Insert the sample data
+INSERT INTO products (product_id, product_name, price, stock) VALUES
+(1, 'Laptop', 55000.00, 10),
+(2, 'Mouse', 500.00, 200),
+(3, 'Keyboard', 1200.00, 150),
+(4, 'Monitor', 8000.00, 50),
+(5, 'Printer', 6500.00, 30);
+
+-- Optional: View the created table
+SELECT * FROM products;
+
+
