@@ -123,7 +123,6 @@ INSERT INTO products (product_id, product_name, price, stock) VALUES
 (4, 'Monitor', 8000.00, 50),
 (5, 'Printer', 6500.00, 30);
 
--- Optional: View the created table
-SELECT * FROM products;
+
 
 
