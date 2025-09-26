@@ -1,6 +1,16 @@
 
 
 
+
+-- 1
+ delimiter //
+ create procedure getHigestMarks(out highM int)
+ begin
+select max(marks) into highM from students; 
+ end//
+ 
+ call getHigestMarks(@high);
+ select @high as topperStudent;
  -- 2
 delimiter //
 create procedure lowestMarks(out lowM int)
@@ -46,3 +56,14 @@ delimiter //
  call getCourseName(@studentid);
  
  select @studentid as studentCourseName;
+
+-- (optional) in and out in same function
+ delimiter //
+ create procedure getInfoStudent(in sid int, out nameS varchar(20), out cname varchar(20))
+ begin
+ select s.name,s.course into nameS, cname from students s where s.id = sid;
+ end //
+
+ call getInfoStudent(2, @nameS, @cname);
+ 
+ select @nameS as name, @cname as courseName;
