@@ -42,3 +42,132 @@ where d.deptname = 'Accounts' or 'Personal' or 'IT'; -- not possible
 ```
 - `in` is used to check two or more attributes to check in single column
 - `or` its is used to check two columns not attributes or to check conditions
+
+```sql
+where h.changedate like '1991%';
+where e.name like '%i';
+```
+- `like` '`%`i' - It will give the names like tiwari, himawari
+- `like` '1991`%`' - It will give the date like 1991-08-12, 1991-08-
+
+#### 📊 SQL Aggregate & Scalar Functions
+Aggregate functions operate on multiple rows and return a single summary value.
+
+| Function         | Description                                      |
+|------------------|--------------------------------------------------|
+| `COUNT()`        | Total number of rows or non-null values          |
+| `SUM()`          | Total sum of numeric values                      |
+| `AVG()`          | Average of numeric values                        |
+| `MIN()`          | Minimum value                                    |
+| `MAX()`          | Maximum value                                    |
+| `GROUP_CONCAT()` / `STRING_AGG()` | Concatenate strings (DBMS-specific)         |
+| `VARIANCE()` / `VAR_POP()` / `VAR_SAMP()` | Statistical variance               |
+| `STDDEV()` / `STDDEV_POP()` / `STDDEV_SAMP()` | Standard deviation             |
+| `MEDIAN()`        | Median value (supported in some DBMS)           |
+| `PERCENTILE_CONT()` / `PERCENTILE_DISC()` | Percentile calculations         |
+| `BIT_AND()` / `BIT_OR()` | Bitwise aggregation (PostgreSQL, SQLite) |
+| `BOOL_AND()` / `BOOL_OR()` | Logical aggregation (PostgreSQL)       |
+
+**Usage**
+```sql
+-- 1 SELECT COUNT(*) FROM employees;
+-- 2 SELECT AVG(salary) FROM employees;
+-- 3 SELECT department, AVG(salary) FROM employees GROUP BY department;
+```
+Scalar functions operate on individual rows and return a value per row.
+
+| Function     | Description                                      |
+|--------------|--------------------------------------------------|
+| `MOD(x, y)`  | Remainder of `x ÷ y`                             |
+| `POWER(x, y)`| `x` raised to the power of `y`                   |
+| `ABS(x)`     | Absolute value                                   |
+| `ROUND(x, d)`| Round to `d` decimal places                      |
+| `CEIL(x)` / `CEILING(x)` | Round up to nearest integer         |
+| `FLOOR(x)`   | Round down to nearest integer                    |
+| `EXP(x)`     | Exponential (`e^x`)                              |
+| `LOG(x)` / `LN(x)` | Natural logarithm                         |
+| `LOG10(x)`   | Base-10 logarithm                                |
+| `SQRT(x)`    | Square root                                      |
+| `SIGN(x)`    | Returns -1, 0, or 1 based on sign of `x`         |
+| `TRUNC(x, d)`| Truncate to `d` decimal places                   |
+| `RADIANS(x)` / `DEGREES(x)` | Convert between degrees/radians |
+
+**Usage** with Aggregate + Scalar
+```sql
+SELECT department,
+       MAX(POWER(salary, 2)) AS max_salary_squared
+FROM employees GROUP BY department;
+```
+Window Functions are **not aggregates**, but useful for ranking and row-wise analysis.
+
+| Function         | Description                                  |
+|------------------|----------------------------------------------|
+| `ROW_NUMBER()`   | Unique row index per partition               |
+| `RANK()`         | Rank with gaps                               |
+| `DENSE_RANK()`   | Rank without gaps                            |
+| `LEAD()` / `LAG()` | Access next/previous row value             |
+| `NTILE(n)`       | Divide rows into `n` buckets                 |
+| `FIRST_VALUE()` / `LAST_VALUE()` | First/last value in partition |
+
+**ROW_NUMBER()**
+```sql
+WITH th5High AS(
+    SELECT empcode, empname, deptcode, totalPay,
+    ROW_NUMBER() OVER(ORDER BY totalPay DESC) AS indexedPay
+    FROM maxSalaries
+)
+SELECT m.empcode, m.empname, m.deptcode, m.totalPay
+FROM th5High m
+WHERE indexedPay = 5; /*
++---------+---------+----------+----------+
+| empcode | empname | deptcode | totalPay |
++---------+---------+----------+----------+
+| 7499    | Roy     | SALE     |    14970 |
++---------+---------+----------+----------+ */
+```
+**RANK()**
+```sql
+WITH th5High AS(
+    SELECT empcode, empname, deptcode, totalPay,
+    RANK() OVER(ORDER BY totalPay DESC) AS indexedPay
+    FROM maxSalaries
+)
+SELECT m.empcode, m.empname, m.deptcode, m.totalPay
+FROM th5High m
+WHERE indexedPay = 5; /*
++---------+---------+----------+----------+
+| empcode | empname | deptcode | totalPay |
++---------+---------+----------+----------+
+| 7499    | Roy     | SALE     |    14970 |
+| 9902    | Ahmad   | SALE     |    14970 |
++---------+---------+----------+----------+ */
+```
+| Function | Behavior |
+|----------|----------|
+| `ROW_NUMBER()` | Assigns unique sequential numbers, even for tied values |
+| `RANK()` | Assigns same rank to tied values, skips subsequent ranks |
+
+- Aggregate functions **collapse rows** unless used with `GROUP BY`.
+- Scalar functions **do not collapse rows** — they work per row.
+- Window functions **preserve rows** and allow advanced analytics.
+---
+#### View
+```sql
+CREATE VIEW employeeAge AS (
+select e.empcode, e.empname, timestampdiff(year, e.birthdate, curdate()) as age, e.supcode from emp e
+);
+DROP VIEW employeeAge
+```
+- A view is a virtual table that doesn't store data itself but displays data from one or more underlying tables based on a predefined SQL query.
+- When you query a view, the database executes the underlying query and returns the results.
+  
+**Limitations**
+1. Views can be slower than direct table queries.
+2. No indexes can be created on most views (except materialized views)
+3. Nested views can create performance bottlenecks
+4. Not all views are updatable (INSERT/UPDATE/DELETE restrictions)
+5. Query optimization can be harder to troubleshoot
+6. Error messages may be less clear when they originate from view logic
+7. Views add another layer that needs to be documented and maintained
+   
+*At the time of learning sql, it helps making complex query easy. Instead we have to create to complex nested queries (It helps to simplify things)*
