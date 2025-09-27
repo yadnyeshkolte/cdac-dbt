@@ -200,6 +200,7 @@ CREATE TABLE course (
     UNIQUE (course_code, academic_year, semester),
 );
 ```
+---
 **Alter Table**
 **Adding the new column**
 ```sql
@@ -208,9 +209,7 @@ ALTER TABLE course ADD COLUMN duration_weeks INTEGER;
 **Altering table and attaching the foreign key**
 ```sql
 ALTER TABLE course 
-ADD COLUMN category_id INTEGER,
-ADD CONSTRAINT fk_course_category 
-    FOREIGN KEY (category_id) REFERENCES category(id);
+ADD FOREIGN KEY (category_id) REFERENCES category(id);
 ```
 **Dropping the table**
 ```sql
@@ -233,6 +232,33 @@ MODIFY COLUMN credits SMALLINT NOT NULL DEFAULT 3;
 ALTER TABLE course 
 RENAME COLUMN course_name TO title;
 ```
-
-
-
+---
+- course is table
+  
+**Update into table**
+```sql
+UPDATE course SET credits = 3 WHERE course_name NOT LIKE '%Operating%';
+```
+```sql
+UPDATE course 
+SET instructor = (
+    SELECT department 
+    FROM instructor_details 
+    WHERE instructor_details.instructor_name = course.instructor
+) 
+WHERE instructor IN (
+    SELECT instructor_name 
+    FROM instructor_details
+);
+```
+**Insert into table**
+```sql
+INSERT INTO course (course_name, category_id) 
+VALUES ('Math 101', 999);  -- 1
+INSERT INTO course VALUES (5, 'Algorithms'); -- 2
+```
+**Delete from table**
+```sql
+DELETE FROM course WHERE course_name = 'DBT';
+```
+---
