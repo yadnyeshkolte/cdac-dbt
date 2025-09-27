@@ -171,3 +171,68 @@ DROP VIEW employeeAge
 7. Views add another layer that needs to be documented and maintained
    
 *At the time of learning sql, it helps making complex query easy. Instead we have to create to complex nested queries (It helps to simplify things)*
+---
+
+### TCL Things (Transaction Control Language)
+
+| Command | Description |
+|---------|-------------|
+| `SHOW DATABASES;` | List all databases |
+| `CREATE DATABASE db_name;` | Create a new database |
+| `USE database_name;` | Switch to a specific database |
+| `DROP DATABASE db_name;` | Delete a database |
+| `SHOW TABLES;` | List all tables in current database |
+| `DESCRIBE table_name;` | Show table structure (columns, types, etc.) |
+| `DESC table_name;` | Short form of DESCRIBE |
+| `SHOW CREATE TABLE table_name;` | Show the CREATE statement for a table |
+
+**Create the Table**
+```sql
+CREATE TABLE course (
+    course_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_name VARCHAR(20) NOT NULL UNIQUE,
+    course_type ENUM('Core', 'Elective', 'Optional', 'Mandatory') DEFAULT 'Core',
+    is_active BOOLEAN DEFAULT TRUE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    course_fee DECIMAL(10,2),
+    FOREIGN KEY (department_id) REFERENCES department(department_id),
+    CHECK (credits > 0 AND credits <= 6),
+    UNIQUE (course_code, academic_year, semester),
+);
+```
+**Alter Table**
+**Adding the new column**
+```sql
+ALTER TABLE course ADD COLUMN duration_weeks INTEGER;
+```
+**Altering table and attaching the foreign key**
+```sql
+ALTER TABLE course 
+ADD COLUMN category_id INTEGER,
+ADD CONSTRAINT fk_course_category 
+    FOREIGN KEY (category_id) REFERENCES category(id);
+```
+**Dropping the table**
+```sql
+ALTER TABLE course 
+DROP COLUMN online_available,
+DROP COLUMN difficulty_level;
+```
+**Altering the properties**
+```sql
+ALTER TABLE course 
+MODIFY COLUMN course_name VARCHAR(200);
+```
+**MySQL syntax for modifying**
+```sql
+ALTER TABLE course 
+MODIFY COLUMN credits SMALLINT NOT NULL DEFAULT 3;
+```
+**Change column name**
+```sql
+ALTER TABLE course 
+RENAME COLUMN course_name TO title;
+```
+
+
+
