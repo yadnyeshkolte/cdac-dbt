@@ -70,6 +70,19 @@ db.students.deleteOne({_id:ObjectId('68d818935c7b464da1cebea5')})
 ```js
 db.students.updateMany({_id:1},{$set:{age:56,laptop:"Alien"}})
 ```
+
 ```js
 db.contacts.find({ _id: { $gte: 2, $lte: 4 } })
+```
+**upsert**
+```js
+db.users.updateOne(
+  { username: "johndoe" },
+  { $set: { age: 30 } },
+  { upsert: true }
+)
+```
+**distinct**
+```js
+db.students.distinct("age")
 ```
