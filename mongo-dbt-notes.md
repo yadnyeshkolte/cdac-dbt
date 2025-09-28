@@ -26,5 +26,30 @@ db.students.find({age:{$lte:23}},{name:1,age:1}).sort({name:-1})
 |--------------|-------------------------------------------------------|-----------------------------------------------|
 | `$exists`    | Checks if a field is present                          | `{ laptop: { $exists: true } }`               |
 | `$type`      | Matches documents with a field of a specific BSON type| `{ age: { $type: "int" } }`                   |
+```js
+db.movies.insertMany([ 
+{ title: "Inception", year: 2010, genre: ["Sci-Fi","Thriller"], rating: 8.8, director: "Christopher 
+Nolan" }, 
+{ title: "Interstellar", year: 2014, genre: ["Sci-Fi","Drama"], rating: 8.6, director: 
+"Christopher Nolan" }
+]) 
+```
 
+```js
+db.readings.find({ location: "Room1", timestamp: { $gte: ISODate("2022-09
+20T10:00:00Z"), $lte: ISODate("2025-09-20T10:00:00+05:30") } }) 
+```
+
+```js
+db.readings.find({ location: "Room1", timestamp: { $gte: ISODate("2025-09
+20T10:00:00Z"), $lte: ISODate("2025-09-20T10:15:00Z") } }) 
+```
+
+```js
+db.students.deleteOne({_id:ObjectId('68d818935c7b464da1cebea5')})
+```
+
+```js
+db.students.updateMany({_id:1},{$set:{age:56,laptop:"Alien"}})
+```
 
