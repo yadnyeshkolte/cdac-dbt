@@ -86,3 +86,15 @@ db.users.updateOne(
 ```js
 db.students.distinct("age")
 ```
+**create index**
+```js
+db.participants.createIndex({'age':1})
+```
+**get index**
+```js
+db.participants.getIndexes()
+```
+**count documents**
+```js
+db.participants.countDocuments({age:{$lt:35}})
+```
