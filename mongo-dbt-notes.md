@@ -22,10 +22,28 @@ db.students.find({age:{$lte:23}},{name:1,age:1}).sort({name:-1})
 | `$not`     | Inverts the effect of a query expression              | `{ age: { $not: { $gt: 30 } } }`              |
 | `$nor`     | Matches documents that **fail all** query expressions | `{ $nor: [ { age: 23 }, { name: "Bob" } ] }`  |
 
+| Operator   | Description                                           | Example Usage                                 |
+|------------|-------------------------------------------------------|-----------------------------------------------|
+| `$set`     | Sets the value of a field                             | `{ $set: { age: 30 } }`                        |
+| `$unset`   | Removes the specified field                           | `{ $unset: { laptop: "" } }`                  |
+| `$inc`     | Increments a field by a specified value               | `{ $inc: { age: 1 } }`                         |
+| `$mul`     | Multiplies the value of a field                       | `{ $mul: { score: 2 } }`                       |
+| `$rename`  | Renames a field                                       | `{ $rename: { name: "fullName" } }`           |
+| `$min`     | Updates field only if the specified value is lower    | `{ $min: { age: 25 } }`                        |
+| `$max`     | Updates field only if the specified value is higher   | `{ $max: { age: 40 } }`                        |
+| `$currentDate` | Sets the field to the current date or timestamp   | `{ $currentDate: { lastModified: true } }`    |
+
+| Method                  | Description                                         | Example Usage                                 |
+|-------------------------|-----------------------------------------------------|-----------------------------------------------|
+| `countDocuments()`      | Returns the number of documents that match a query | `db.students.countDocuments({ age: { $lt: 25 } })` |
+| `estimatedDocumentCount()` | Returns an estimate of the total number of documents in a collection | `db.students.estimatedDocumentCount()`        |
+
+
 | Operator     | Description                                           | Example Usage                                 |
 |--------------|-------------------------------------------------------|-----------------------------------------------|
 | `$exists`    | Checks if a field is present                          | `{ laptop: { $exists: true } }`               |
 | `$type`      | Matches documents with a field of a specific BSON type| `{ age: { $type: "int" } }`                   |
+
 ```js
 db.movies.insertMany([ 
 { title: "Inception", year: 2010, genre: ["Sci-Fi","Thriller"], rating: 8.8, director: "Christopher 
@@ -52,4 +70,6 @@ db.students.deleteOne({_id:ObjectId('68d818935c7b464da1cebea5')})
 ```js
 db.students.updateMany({_id:1},{$set:{age:56,laptop:"Alien"}})
 ```
-
+```js
+db.contacts.find({ _id: { $gte: 2, $lte: 4 } })
+```
