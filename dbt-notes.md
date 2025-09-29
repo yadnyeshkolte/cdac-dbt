@@ -220,7 +220,7 @@ ALTER TABLE course ADD COLUMN duration_weeks INTEGER;
 ALTER TABLE course 
 ADD FOREIGN KEY (category_id) REFERENCES category(id);
 ```
-**(ALTER) Dropping the table**
+**(ALTER) Dropping the column**
 ```sql
 ALTER TABLE course 
 DROP COLUMN online_available,
