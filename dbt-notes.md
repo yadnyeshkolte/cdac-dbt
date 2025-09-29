@@ -189,6 +189,8 @@ At the time of learning sql, it helps making complex query easy. Instead we have
 | `USE database_name;` | Switch to a specific database |
 | `DROP DATABASE db_name;` | Delete a database |
 | `SHOW TABLES;` | List all tables in current database |
+| `DROP TABLE table_name;` | Delete a table |
+| `TRUNCATE TABLE table_name;` | Remove all rows from a table without logging individual row deletions |
 | `DESCRIBE table_name;` | Show table structure (columns, types, etc.) |
 | `DESC table_name;` | Short form of DESCRIBE |
 | `SHOW CREATE TABLE table_name;` | Show the CREATE statement for a table |
