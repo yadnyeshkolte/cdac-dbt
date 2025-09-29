@@ -44,6 +44,10 @@ db.students.find({age:{$lte:23}},{name:1,age:1}).sort({name:-1})
 | `$exists`    | Checks if a field is present                          | `{ laptop: { $exists: true } }`               |
 | `$type`      | Matches documents with a field of a specific BSON type| `{ age: { $type: "int" } }`                   |
 
+**2 to 4**
+```js
+db.Students.find().sort({name:1}).skip(2).limit(2)
+```
 **insert many**
 ```js
 db.movies.insertMany([ 
