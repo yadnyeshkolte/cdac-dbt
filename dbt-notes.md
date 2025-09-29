@@ -290,5 +290,65 @@ delimiter ;
 ```
 **Cousor**
 ```sql
+delimiter //
+create procedure getGrade()
+begin
+declare sid int default 0;
 
+declare grade varchar(5) default '';
+declare done int default 0;
+declare sname varchar(20);
+declare smarks int;
+declare sgrade varchar(5);
+
+declare c4 cursor for select s.StudentID, s.Name, s.Marks from Students s;
+declare continue handler for not found set done = 1;
+create temporary table if not exists temp_grade(
+	sid int,
+    sname varchar(20),
+    smarks int,
+    sgrade varchar(5)
+);
+open c4;
+runloop: loop
+fetch c4 into  sid, sname, smarks;
+if(done=1) then 
+leave runloop;
+end if;
+if(smarks>=80) then
+set sgrade = 'A';
+elseif(smarks>=60) then
+set sgrade = 'B';
+elseif(smarks>=40) then
+set sgrade = 'C';
+else
+set sgrade = 'Fail';
+end if;
+insert into temp_grade values (sid, sname, smarks, sgrade);
+end loop;
+close c4;
+select * from temp_grade;
+drop table if exists temp_grade; 
+end //
+call getGrade();
+drop procedure getGrade;
+```
+```sql
+-- data for cursor
+create database school;
+
+use school;
+
+CREATE TABLE Students (
+    StudentID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Marks INT
+);
+
+INSERT INTO Students VALUES
+(101, 'Ravi', 85),
+(102, 'Priya', 72),
+(103, 'Karan', 55),
+(104, 'Meera', 40),
+(105, 'Anita', 30);
 ```
