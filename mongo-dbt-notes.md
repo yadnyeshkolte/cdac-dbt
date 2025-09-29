@@ -44,6 +44,7 @@ db.students.find({age:{$lte:23}},{name:1,age:1}).sort({name:-1})
 | `$exists`    | Checks if a field is present                          | `{ laptop: { $exists: true } }`               |
 | `$type`      | Matches documents with a field of a specific BSON type| `{ age: { $type: "int" } }`                   |
 
+**insert many**
 ```js
 db.movies.insertMany([ 
 { title: "Inception", year: 2010, genre: ["Sci-Fi","Thriller"], rating: 8.8, director: "Christopher 
@@ -52,25 +53,25 @@ Nolan" },
 "Christopher Nolan" }
 ]) 
 ```
-
+**date time**
 ```js
 db.readings.find({ location: "Room1", timestamp: { $gte: ISODate("2022-09
 20T10:00:00Z"), $lte: ISODate("2025-09-20T10:00:00+05:30") } }) 
 ```
-
+**date time**
 ```js
 db.readings.find({ location: "Room1", timestamp: { $gte: ISODate("2025-09
 20T10:00:00Z"), $lte: ISODate("2025-09-20T10:15:00Z") } }) 
 ```
-
+**delete one**
 ```js
 db.students.deleteOne({_id:ObjectId('68d818935c7b464da1cebea5')})
 ```
-
+**update many**
 ```js
 db.students.updateMany({_id:1},{$set:{age:56,laptop:"Alien"}})
 ```
-
+**show which it wants**
 ```js
 db.contacts.find({ _id: { $gte: 2, $lte: 4 } })
 ```
