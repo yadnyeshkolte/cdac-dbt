@@ -125,6 +125,12 @@ WHERE indexedPay = 5; /*
 | 7499    | Roy     | SALE     |    14970 |
 +---------+---------+----------+----------+ */
 ```
+**Offset and Limit**
+```sql
+SELECT * FROM users LIMIT 5; -- Top 5 rows
+SELECT * FROM users LIMIT 10 OFFSET 5; -- Skip first 5 rows, then get next 10
+SELECT * FROM users LIMIT 5, 10; -- Get 10 rows starting from the 6th row (Same as
+```
 **RANK()**
 ```sql
 WITH th5High AS(
@@ -197,7 +203,7 @@ CREATE TABLE course (
     course_fee DECIMAL(10,2),
     FOREIGN KEY (department_id) REFERENCES department(department_id),
     CHECK (credits > 0 AND credits <= 6),
-    UNIQUE (course_code, academic_year, semester),
+    UNIQUE (course_code, academic_year, semester)
 );
 ```
 ---
