@@ -222,6 +222,10 @@ DROP COLUMN difficulty_level;
 ALTER TABLE course 
 MODIFY COLUMN course_name VARCHAR(200);
 ```
+**Alter as drop column**
+```sql
+alter table users drop  age;
+```
 **MySQL syntax for modifying**
 ```sql
 ALTER TABLE course 
@@ -262,3 +266,29 @@ INSERT INTO course VALUES (5, 'Algorithms'); -- 2
 DELETE FROM course WHERE course_name = 'DBT';
 ```
 ---
+**Triggers**
+```sql
+CREATE A TRIGGER TO CHECK EMPLOYEE SHOULD BE OLDER THAN 18
+
+delimiter //
+CREATE TRIGGER emp_trigger BEFORE INSERT
+ON emp
+FOR EACH ROW
+if timestampdiff(year,NEW.birthdate,curdate()) <18 then 
+
+SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'employee must be older than 18.';
+END IF; //
+delimiter ;
+```
+**Procedure**
+```sql
+
+```
+**Functions**
+```sql
+
+```
+**Cousor**
+```sql
+
+```
