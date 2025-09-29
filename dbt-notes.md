@@ -387,7 +387,7 @@ end //
 select getDeptName(7839 ) as DeptName;
 drop function getDeptName;
 ```
-**Cousor**
+**Cursor**
 ```sql
 delimiter //
 create procedure getGrade()
