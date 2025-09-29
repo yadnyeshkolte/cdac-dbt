@@ -1,4 +1,4 @@
-# MySQL Assignment 2
+## MySQL Assignment 2
 
 
 ``` md
@@ -9,7 +9,7 @@ Always be cautious when using SELECT ... INTO — it must return exactly one row
 Dataype must always to be same in both in and out
 ```
 
-## Create Database and Table
+### Create Database and Table
 
 ```sql
 CREATE DATABASE school;
@@ -25,7 +25,7 @@ CREATE TABLE students (
 );
 ```
 
-## 🔹 Insert Sample Data
+### 🔹 Insert Sample Data
 
 ```sql
 INSERT INTO students (name, age, course, marks) VALUES
@@ -41,7 +41,7 @@ INSERT INTO students (name, age, course, marks) VALUES
 ('Jane', 22, 'Computer Science', 95);
 ```
 
-## 5 Problem Statements using SELECT INTO with **IN Parameter**
+### 1 Problem Statements using SELECT INTO with **IN Parameter**
 
 1. **Write a procedure that accepts a student name as input and retrieves the marks of that student using SELECT INTO and display the retrieved marks.**
 
@@ -53,7 +53,7 @@ INSERT INTO students (name, age, course, marks) VALUES
 
 5. **Write a procedure that accepts a student name as input and retrieves the course of that student using SELECT INTO and display the retrieved course.**
 
-## 5 Problem Statements using SELECT INTO with **OUT Parameter**
+## 2 Problem Statements using SELECT INTO with **OUT Parameter**
 
 1. **Write a procedure that retrieves the name of the topper student (highest marks) into an OUT parameter using SELECT INTO and display the retrieved name.**
 
@@ -65,3 +65,34 @@ INSERT INTO students (name, age, course, marks) VALUES
 
 5. **Write a procedure that accepts a student ID as input and retrieves the course name of that student into an OUT parameter using SELECT INTO and display the retrieved course name.**
 
+## 3 Problem Statements using Functions**
+1. Write a stored function to return the annual salary of an employee when the employee ID is given.
+2. Write a stored function to find the experience of an employee (in years) from the hire date, when the employee ID is given.
+3. Write a stored function to return the department name when the employee ID is given.
+4. Write a stored function to return the number of employees in a particular department, when the department ID is given.
+5. Write a stored function to return the bonus amount for an employee based on their salary (e.g., 10% of salary if salary <50,000, otherwise 5%).
+   
+### Problem Statement 4: Student Grade Assignment
+```sql
+Table: Students
+
+CREATE TABLE Students (
+    StudentID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Marks INT
+);
+
+INSERT INTO Students VALUES
+(101, 'Ravi', 85),
+(102, 'Priya', 72),
+(103, 'Karan', 55),
+(104, 'Meera', 40),
+(105, 'Anita', 30);
+```
+Cursor Logic: Use a cursor to loop through each student’s marks.
+Assign grade as per logic:
+Marks ≥ 80 → Grade 'A'
+Marks between 60–79 → Grade 'B'
+Marks between 40–59 → Grade 'C'
+Marks < 40 → Grade 'Fail'
+Print student name with assigned grade.
