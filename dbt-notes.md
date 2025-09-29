@@ -175,8 +175,9 @@ DROP VIEW employeeAge
 5. Query optimization can be harder to troubleshoot
 6. Error messages may be less clear when they originate from view logic
 7. Views add another layer that needs to be documented and maintained
-   
-*At the time of learning sql, it helps making complex query easy. Instead we have to create to complex nested queries (It helps to simplify things)*
+
+At the time of learning sql, it helps making complex query easy. Instead we have to create to complex nested queries (It helps to simplify things)
+
 ---
 
 ### TCL Things (Transaction Control Language)
@@ -208,36 +209,36 @@ CREATE TABLE course (
 ```
 ---
 **Alter Table**
-**Adding the new column**
+**(ALTER) Adding the new column**
 ```sql
 ALTER TABLE course ADD COLUMN duration_weeks INTEGER;
 ```
-**Altering table and attaching the foreign key**
+**(ALTER) Altering table and attaching the foreign key**
 ```sql
 ALTER TABLE course 
 ADD FOREIGN KEY (category_id) REFERENCES category(id);
 ```
-**Dropping the table**
+**(ALTER) Dropping the table**
 ```sql
 ALTER TABLE course 
 DROP COLUMN online_available,
 DROP COLUMN difficulty_level;
 ```
-**Altering the properties**
+**(ALTER) Altering the properties**
 ```sql
 ALTER TABLE course 
 MODIFY COLUMN course_name VARCHAR(200);
 ```
-**Alter as drop column**
+**(ALTER) Alter as drop column**
 ```sql
 alter table users drop  age;
 ```
-**MySQL syntax for modifying**
+**(ALTER) for modifying**
 ```sql
 ALTER TABLE course 
 MODIFY COLUMN credits SMALLINT NOT NULL DEFAULT 3;
 ```
-**Change column name**
+**(ALTER) Change column name**
 ```sql
 ALTER TABLE course 
 RENAME COLUMN course_name TO title;
@@ -272,6 +273,57 @@ INSERT INTO course VALUES (5, 'Algorithms'); -- 2
 DELETE FROM course WHERE course_name = 'DBT';
 ```
 ---
+**UNION vs UNION ALL**
+| Operation | Description | Duplicates | Performance | Use Case |
+|-----------|-------------|------------|-------------|----------|
+| **UNION** | Combines results from multiple SELECT statements | Removes duplicates | Slower (needs to check duplicates) | When you need unique results |
+| **UNION ALL** | Combines results from multiple SELECT statements | Keeps duplicates | Faster | When duplicates are acceptable or impossible |
+```sql
+-- Basic UNION
+SELECT column1, column2 FROM table1
+UNION
+SELECT column1, column2 FROM table2;
+-- UNION ALL (keeps duplicates)
+SELECT column1, column2 FROM table1
+UNION ALL
+SELECT column1, column2 FROM table2;
+```
+**Types of JOINs**
+| JOIN Type | Returns | Use Case | Diagram Concept |
+|-----------|---------|----------|-----------------|
+| **INNER JOIN** | Only matching rows from both tables | Most common, when you need related data | Intersection |
+| **LEFT OUTER JOIN** | All rows from left table + matching from right | Keep all left records, even without matches | Left circle + intersection |
+| **RIGHT OUTER JOIN** | All rows from right table + matching from left | Keep all right records, even without matches | Right circle + intersection |
+| **FULL OUTER JOIN** | All rows from both tables | When you need everything | Both circles |
+| **CROSS JOIN** | Cartesian product (all combinations) | Every row with every other row | All possible pairs |
+| **SELF JOIN** | Join table to itself | Hierarchical data, comparisons within table | Same table twice |
+
+**Set Operations**
+**INTERSECT**
+```sql
+-- Students who are enrolled in both Fall and Spring
+SELECT student_id FROM fall_enrollment
+INTERSECT
+SELECT student_id FROM spring_enrollment;
+-- MySQL workaround (no native INTERSECT):
+SELECT DISTINCT f.student_id
+FROM fall_enrollment f
+INNER JOIN spring_enrollment s ON f.student_id = s.student_id;
+```
+**EXCEPT (MINUS in Oracle)**
+```sql
+-- Students enrolled in Fall but NOT in Spring
+SELECT student_id FROM fall_enrollment
+EXCEPT
+SELECT student_id FROM spring_enrollment;
+
+-- MySQL workaround:
+SELECT f.student_id
+FROM fall_enrollment f
+LEFT JOIN spring_enrollment s ON f.student_id = s.student_id
+WHERE s.student_id IS NULL;
+```
+---
 **Triggers**
 ```sql
 CREATE A TRIGGER TO CHECK EMPLOYEE SHOULD BE OLDER THAN 18
@@ -288,11 +340,52 @@ delimiter ;
 ```
 **Procedure**
 ```sql
+delimiter //
+create procedure maximumSal(in deptid varchar(20), out maxSal int, out grade varchar(20))
+begin
+select max(s.salary) into maxSal
+from latestSalary s inner join dept d on s.deptcode = d.deptcode
+group by d.deptcode
+having d.deptcode = deptid;
+if(maxSal>14000) then
+set grade = 'A';
+end if;
+end //
 
+set @deptid = 'STOR';
+call maximumSal(@deptid,@maxSal,@grade);
+select @maxSal, @grade;
+drop procedure  maximumSal;
+```
+**Procedue while (factorail)**
+```sql
+delimiter //
+create procedure factorial(in number int)
+begin
+declare fac int default 1;
+while(number>0)
+do
+set fac = fac * number;
+set number = number - 1;
+select concat('Its facorial is ',fac) as Factorial;
+end while;
+end //
+set @number = 4;
+call factorial(@number);
+drop procedure factorial;
 ```
 **Functions**
 ```sql
-
+delimiter //
+create function getDeptName(empid int) returns varchar(20) deterministic
+begin
+declare deptname varchar(20) default '';
+select d.deptname into deptname from emp e 
+join dept d on e.deptcode = d.deptcode where e.empcode = empid;
+return deptname;
+end //
+select getDeptName(7839 ) as DeptName;
+drop function getDeptName;
 ```
 **Cousor**
 ```sql
@@ -300,7 +393,6 @@ delimiter //
 create procedure getGrade()
 begin
 declare sid int default 0;
-
 declare grade varchar(5) default '';
 declare done int default 0;
 declare sname varchar(20);
@@ -342,15 +434,12 @@ drop procedure getGrade;
 ```sql
 -- data for cursor
 create database school;
-
 use school;
-
 CREATE TABLE Students (
     StudentID INT PRIMARY KEY,
     Name VARCHAR(50),
     Marks INT
 );
-
 INSERT INTO Students VALUES
 (101, 'Ravi', 85),
 (102, 'Priya', 72),
