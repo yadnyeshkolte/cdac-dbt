@@ -198,7 +198,7 @@ At the time of learning sql, it helps making complex query easy. Instead we have
 **Create the Table**
 ```sql
 CREATE TABLE course (
-    course_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_id INTEGER PRIMARY KEY AUTO_INCREMENT,    -- for mysql it havs lowerdash in autoincrement
     course_name VARCHAR(20) NOT NULL UNIQUE,
     course_type ENUM('Core', 'Elective', 'Optional', 'Mandatory') DEFAULT 'Core',
     is_active BOOLEAN DEFAULT TRUE,
